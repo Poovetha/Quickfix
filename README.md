@@ -61,4 +61,3 @@ if you accidentally put a secret in common_site_config.json, It leads to loss of
 If a worker is crashed during execution, the Background job moves to the queue and can be continue when the worker restarts.
 
 When a browser hits /api/method/quickfix.api.get_job_summary
-
