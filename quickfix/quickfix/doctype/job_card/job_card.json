@@ -1,0 +1,135 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-24 17:51:11.914322",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customeranddevice",
+  "customer_name",
+  "customer_phone",
+  "customer_email",
+  "device_type",
+  "device_brand",
+  "device_model",
+  "imei_or_serial",
+  "problem_description",
+  "assignment_diagnosis",
+  "assigned__technician",
+  "diagnosis_notes",
+  "section_break_xtgj",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Job Card",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_xtgj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "customeranddevice",
+   "fieldtype": "Section Break",
+   "label": "Customer & Device"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "assignment_diagnosis",
+   "fieldtype": "Section Break",
+   "label": "Assignment & Diagnosis"
+  },
+  {
+   "fieldname": "assigned__technician",
+   "fieldtype": "Data",
+   "label": "Assigned  Technician"
+  },
+  {
+   "fieldname": "customer_phone",
+   "fieldtype": "Data",
+   "label": "Customer Phone",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_email",
+   "fieldtype": "Data",
+   "label": "Customer Email"
+  },
+  {
+   "fieldname": "device_type",
+   "fieldtype": "Link",
+   "label": "Device Type",
+   "options": "Device Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "device_brand",
+   "fieldtype": "Data",
+   "label": "Device Brand"
+  },
+  {
+   "fieldname": "device_model",
+   "fieldtype": "Data",
+   "label": "Device Model"
+  },
+  {
+   "fieldname": "imei_or_serial",
+   "fieldtype": "Data",
+   "label": "IMEI or Serial"
+  },
+  {
+   "fieldname": "problem_description",
+   "fieldtype": "Text Editor",
+   "label": "Problem Description",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.assigned_technician",
+   "fieldname": "diagnosis_notes",
+   "fieldtype": "Text Editor",
+   "label": "Diagnosis _ Notes"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-02-24 19:56:19.162055",
+ "modified_by": "Administrator",
+ "module": "quickfix",
+ "name": "Job Card",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
