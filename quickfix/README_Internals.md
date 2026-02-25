@@ -1,45 +1,4 @@
-### quickfix
-
-quickfix
-
-### Installation
-
-You can install this app using the [bench](https://github.com/frappe/bench) CLI:
-
-```bash
-cd $PATH_TO_YOUR_BENCH
-bench get-app $URL_OF_THIS_REPO --branch develop
-bench install-app quickfix
-```
-
-### Contributing
-
-This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
-
-```bash
-cd apps/quickfix
-pre-commit install
-```
-
-Pre-commit is configured to use the following tools for checking and formatting your code:
-
-- ruff
-- eslint
-- prettier
-- pyupgrade
-
-### CI
-
-This app can use GitHub Actions for CI. The following workflows are configured:
-
-- CI: Installs this app and runs unit tests on every push to `develop` branch.
-- Linters: Runs [Frappe Semgrep Rules](https://github.com/frappe/semgrep-rules) and [pip-audit](https://pypi.org/project/pip-audit/) on every pull request.
-
-
-### License
-
-mit
-
+ANSWERS:
 
 site_config.json : This is for one particuler site which handles the site's db name , password and type.It reflects the changes for particular site.
 
@@ -199,7 +158,3 @@ Call self.save() inside on_update and see to the issues of it and explain them. 
     Calling save() inside on_update() creates an infinite loop because there is a loop like on_update -> save() -> update -> on_update .
     if we want to update a field data , just on_update -> what want to update (self.status = "Paid"), frappe automatically saves the field data.
 
-
-
-
-    
