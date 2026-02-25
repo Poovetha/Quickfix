@@ -34,7 +34,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-24 17:57:40.381448",
+ "modified": "2026-02-24 23:23:08.924455",
  "modified_by": "Administrator",
  "module": "quickfix",
  "name": "Device Type",
@@ -52,6 +52,26 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "QF Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "QF Technician"
+  },
+  {
+   "read": 1,
+   "role": "QF Service Staff"
   }
  ],
  "row_format": "Dynamic",
@@ -60,5 +80,4 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1
-
 }

@@ -14,5 +14,5 @@ class SparePart(Document):
 			self.name = self.part_code.upper() + "-" + make_autoname("PART-.YYYY.-.####")
 
 	def validate(self):
-		if self.selling_price > self.unit_cost:
+		if self.selling_price < self.unit_cost:
 			frappe.throw("Selling Price must be high")
