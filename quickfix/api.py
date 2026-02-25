@@ -1,9 +1,8 @@
 import frappe
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def add():
-	# a = 10
-	# b = 0
-	# c = a / b
-	return {"name": "poovitha"}
+	doc = frappe.get_doc("Job Card", "JC-2026-00001", check_permission=True)
+	print(doc.has_permission("write"))
+	return doc.customer_name

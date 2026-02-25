@@ -97,4 +97,66 @@ Set developer_mode: 0 - repeat. What does the browser receive now? Why is this i
 Where do production errors go if they are hidden from the browser?
     The full error details are stored in the bench log files such as frappe.log in logs folder. I explored in the VS code about it.
 
+In a whitelisted method, call frappe.get_doc("Job Card", name) WITHOUT ignore_permissions. Then log in as a QF Technician user who is NOT assigned to that job. What error is raised and at what layer does Frappe stop the request?
+    As i use v16, get_doc is not checking permission by default,when we force it to check_permission it throws an error.
+
+![This images is attachment for get_doc has not check permission](image.png)
+The following line will check when i give check permission
+https://github.com/akhilnarang/frappe/blob/c290cffc2711a89848f8d132c32442ab3fd18a5e/frappe/model/document.py#L156
+![After enforcing the check_permission get doc throws an error ](image.png)
+
+Run: frappe.db.sql("SHOW TABLES LIKE '%Job%'") and list what you see,
+    In [1]: frappe.db.sql("SHOW TABLES LIKE '%Job%'")
+    Out[1]: (('tabJob Card',), ('tabScheduled Job Log',), ('tabScheduled Job Type',))
+
+    it list the tables which has job in their table name. tab is the short form of table which is default prefix with that every table name will store in the database which help to avoid conflict in duplication of table name.
+
+Run: frappe.db.sql("DESCRIBE `tabJob Card`", as_dict=True) and list 5 column names you recognise from your DocType fields.
+    It shows the database columns (fields) created from the Job Card DocType.
+    {'Field': 'customer_name',
+    'Type': 'varchar(140)',
+    'Null': 'YES',
+    'Key': '',
+    'Default': None,
+    'Extra': ''}
+    {'Field': 'assigned__technician',
+    'Type': 'varchar(140)',
+    'Null': 'YES',
+    'Key': '',
+    'Default': None,
+    'Extra': ''},
+    {'Field': 'customer_phone',
+    'Type': 'varchar(140)',
+    'Null': 'YES',
+    'Key': '',
+    'Default': None,
+    'Extra': ''},
+    {'Field': 'customer_email',
+    'Type': 'varchar(140)',
+    'Null': 'YES',
+    'Key': '',
+    'Default': None,
+    'Extra': ''},
+    {'Field': 'device_type',
+    'Type': 'varchar(140)',
+    'Null': 'YES',
+    'Key': '',
+    'Default': None,
+    'Extra': ''},
+
+
+What are the three numeric values of docstatus and what state does each represent?
+    Draft - docstatus 0
+    Submitted - docstatus 1
+    Cancelled - docstatus 2
+
+
+
+What is the DB table name for the Part Usage Entry DocType?
+    tabPart Usage Entry
+
+If you delete row at idx=2 and re-save, what happens to idx values of remaining rows?
+    It will automatically renumbers the remaining rows to main a sequence order.
+
+
     
