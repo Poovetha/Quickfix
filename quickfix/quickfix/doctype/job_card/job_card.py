@@ -8,16 +8,14 @@ from frappe.utils import now
 
 class JobCard(Document):
 	def validate(self):
-		charge = frappe.get_single_value("QuickFix Settings", "default_labour_charge")
-		self.labour_charge = charge
+		self.labour_charge = frappe.get_single_value("QuickFix Settings", "default_labour_charge")
 		if not len(self.customer_phone) == 10:
 			frappe.throw("Phone Number must be exactly 10 digits")
 		if self.status == "In Repair" and not self.assigned__technician:
 			frappe.throw("Assigned Technician is must when status is repair")
-
+		total = 0
 		for parts in self.parts_used:
 			parts.total_price = parts.quantity * parts.unit_price
-			total = 0
 			total += parts.total_price
 
 		self.parts_total = total
@@ -33,7 +31,7 @@ class JobCard(Document):
 
 		for parts in self.parts_used:
 			stock = frappe.get_value("Spare Part", {"part_name": parts.part_name}, ["stock_qty"]) or 0
-			if stock >= parts.quantity:
+			if stock < parts.quantity:
 				frappe.throw(f"{parts.part_name}is out of stock")
 
 	def on_submit(self):
@@ -60,8 +58,8 @@ class JobCard(Document):
 		)
 		invoice.insert(ignore_permissions=True)
 
-		# frappe.publish_realtime() sends real-time updates from the server to the user interface without page refresh via socket io.
-		frappe.publish_realtime("job_ready", {"job_card": "JC-0001"}, user=self.owner)
+		# frappe.publish_realtime() sends real-time updates from the server to the user interface without page refresh via socket io.frappe.publish_realtime() is used to send live updates from the server to the browser instantly.No page refresh needed
+		frappe.publish_realtime("job_ready", {"job_card": self.name}, user=self.owner)
 
 		frappe.enqueue(method="quickfix.api.send_job_ready_email", job_card_name=self.name)
 
