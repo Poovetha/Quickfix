@@ -7,6 +7,9 @@ app_license = "mit"
 
 fixtures = ["Device Type", "Role", "Custom DocPerm"]
 
+override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJobCard"}
+
+
 # Apps
 # ------------------
 
