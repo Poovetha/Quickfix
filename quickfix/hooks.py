@@ -5,7 +5,7 @@ app_description = "quickfix"
 app_email = "poovethapalanivelu@gmail.com"
 app_license = "mit"
 
-fixtures = [{"dt": "Device Type"}]
+fixtures = ["Device Type", "Role", "Custom DocPerm"]
 
 # Apps
 # ------------------

@@ -158,3 +158,43 @@ Call self.save() inside on_update and see to the issues of it and explain them. 
     Calling save() inside on_update() creates an infinite loop because there is a loop like on_update -> save() -> update -> on_update .
     if we want to update a field data , just on_update -> what want to update (self.status = "Paid"), frappe automatically saves the field data.
 
+In a utility function, call frappe.rename_doc("Technician", old_name, new_name,merge=False) and show how linked fields(assigned_technician on Job Cards) are updated automatically?
+    frappe.rename_doc() renames the document name from old name to new name and update all the linked fields also updated automatically and merge = false is for , if any same name document is exist the current document will avoid to merge with existing.
+In bench console: call frappe.get_doc_permissions(doc) on a Job Card while logged in as different users. Document what the return dict looks like? Correct function is frappe.permission.get_doc_permission()
+    In [4]: doc = frappe.get_doc("Job Card", "JC-2026-00002")
+
+    In [5]: doc
+    Out[5]: <JobCard: doctype=Job Card JC-2026-00002>
+
+    In [6]: frappe.get_doc_permissions(doc)
+    ---------------------------------------------------------------------------
+    AttributeError                            Traceback (most recent call last)
+    Cell In[6], line 1
+    ----> 1 frappe.get_doc_permissions(doc)
+
+    AttributeError: module 'frappe' has no attribute 'get_doc_permissions'
+    In [9]: frappe.set_user("technician@gmail.com")
+    ...: frappe.permissions.get_doc_permissions(doc)
+    Out[9]: 
+    {'if_owner': {},
+    'has_if_owner_enabled': False,
+    'select': 0,
+    'read': 0,
+    'write': 0,
+    'create': 0,
+    'delete': 0,
+    'submit': 0,
+    'cancel': 0,
+    'amend': 0,
+    'print': 0,
+    'email': 0,
+    'report': 0,
+    'import': 0,
+    'export': 0,
+    'share': 0}
+
+What is the issues in using frappe.get_all in a whitelisted method that is exposed to guests or low-privilege users. Explain it in the context of permission_query_conditions
+    frappe.get_all() bypasses permission_query_conditions and record-level checks, so using it in guest or low-privilege APIs can cause serious data leakage.
+
+
+
