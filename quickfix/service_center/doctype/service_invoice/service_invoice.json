@@ -86,7 +86,7 @@
  "links": [],
  "modified": "2026-02-24 23:42:05.802339",
  "modified_by": "Administrator",
- "module": "quickfix",
+ "module": "service_center",
  "name": "Service Invoice",
  "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",

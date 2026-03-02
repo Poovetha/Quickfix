@@ -42,7 +42,7 @@
  "links": [],
  "modified": "2026-02-24 19:52:23.959734",
  "modified_by": "Administrator",
- "module": "quickfix",
+ "module": "service_center",
  "name": "QuickFix Settings",
  "owner": "Administrator",
  "permissions": [

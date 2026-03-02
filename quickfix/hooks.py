@@ -7,7 +7,17 @@ app_license = "mit"
 
 fixtures = ["Device Type", "Role", "Custom DocPerm"]
 
-override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJobCard"}
+after_install = "quickfix.hook.after_install"
+
+before_uninstall = "quickfix.hook.before_uninstall"
+
+extend_bootinfo = "quickfix.hook.extend_bootinfo"
+
+on_session_creation = "quickfix.hook.session_creation"
+
+on_logout = "quickfix.hook.session_logout"
+
+# override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJobCard"}
 
 
 # Apps
@@ -95,7 +105,6 @@ override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJ
 
 # before_uninstall = "quickfix.uninstall.before_uninstall"
 # after_uninstall = "quickfix.uninstall.after_uninstall"
-
 # Integration Setup
 # ------------------
 # To set up dependencies/integrations with other apps

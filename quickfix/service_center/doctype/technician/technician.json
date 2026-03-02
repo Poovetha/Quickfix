@@ -86,7 +86,7 @@
  "links": [],
  "modified": "2026-02-25 16:12:24.929574",
  "modified_by": "Administrator",
- "module": "quickfix",
+ "module": "service_center",
  "name": "Technician",
  "naming_rule": "Expression",
  "owner": "Administrator",

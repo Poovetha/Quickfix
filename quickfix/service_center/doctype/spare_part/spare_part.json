@@ -71,7 +71,7 @@
  "links": [],
  "modified": "2026-02-24 23:29:40.323454",
  "modified_by": "Administrator",
- "module": "quickfix",
+ "module": "service_center",
  "name": "Spare Part",
  "naming_rule": "By script",
  "owner": "Administrator",
