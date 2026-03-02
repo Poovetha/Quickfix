@@ -5,7 +5,7 @@ from quickfix.service_center.doctype.job_card.job_card import JobCard
 
 class CustomJobCard(JobCard):
 	def validate(self):
-		super().validate()  # ALWAYS call super first
+		super().validate()  # Always call super first
 		self._check_urgent_unassigned()
 		# if we want to run the custom function first the call must in order.
 
@@ -30,5 +30,5 @@ class CustomJobCard(JobCard):
 # of a DocType (like validate, save, submit logic).
 
 # Use doc_events only want to react to events like after_submit, before_submit,etc..
-# (e.g., send email, log activity) without altering core behavior.
+# which used to  send email, log activity without altering core behavior.
 # choose to use override because here need to extend the validation using super().validate()
