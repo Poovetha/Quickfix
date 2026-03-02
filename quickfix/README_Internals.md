@@ -196,5 +196,40 @@ In bench console: call frappe.get_doc_permissions(doc) on a Job Card while logge
 What is the issues in using frappe.get_all in a whitelisted method that is exposed to guests or low-privilege users. Explain it in the context of permission_query_conditions
      frappe.get_all() bypasses permission_query_conditions and record-level checks, so using it in guest or low-privilege APIs can cause serious data leakage.
 
+Difference between app_include_js and web_include_js
+
+    app_include_js: Loads global JS for the Desk interface used by logged-in users. Used to enhance backend and workflows.
+    web_include_js: Loads JavaScript for website and portal pages. Used to enhance public-facing UI and interactions.
+
+doctype_js : Override the JS form validation for specific doctype.
+doctype_list_js : It can override specific list of doctype which need to override the form validation.
+doctype_tree_js : Used for DocTypes with hierarchical structure like parent and child . Job card is a transaction doctype which has no hierarchical structure.
+
+bench build : if the UI is broken, it is used to compiles and bundles the app’s JS into the assets folder. Ensures updated frontend files are prepared for use.
+
+Cache Busting : Browsers cache old JS/CSS, so changes may not appear immediately,and forces the browser to load the latest version.
+
+Explain the difference between override_whitelisted_methods (hook-based, reversible, explicit) vs monkey patching(import-time, brittle, invisible). When would you use each?
+    
+    override_whitelisted_methods : it is a hook in hooks.py used to replace a whitelisted function with a custom implementation without modifying core files. It is easy to trace and user friendly.
+
+    monkey patching : Monkey patching replaces or modifies functions at runtime by directly changing imported code. It is hard to trace and it is not recommended.
+
+    When monkey patch is used , there is no hook exist to work on a scenario monkey patch will be approached . It is only for development purpose , shouldn't used in production site.
+
+What happens if TWO apps both register override_whitelisted_methods for the same method? Write the answer.
+    If two apps override the same whitelisted method, the override from the app loaded last is used, while others are ignored, which may cause error.
+
+Explain about the Signature mismatch and not having exactly the same arguments as the original and in what case would you get a TypeError.
+    A signature mismatch occurs when the override method does not match the original function’s parameters.Since Frappe passes the original arguments, Python raises a TypeError if required parameters are missing or differ from original.
+
+Explain fieldname collision risk: what happens if your Custom Field has the same fieldname as a field added by a future Frappe update?
+    Fieldname collision happens when two fields try to use the same fieldname in db column in a DocType.
+    If a Custom Field uses a fieldname later added by a Frappe update, it causes duplicate column conflicts, migration failures, or type mismatches that can break the app.
+
+Explain patching order: if Patch 1 creates a Custom Field and Patch 2 reads it, why must they be separate entries in patches.txt and never merged?
+    A patch is a one time update script that safely changes the database during the bench migrate. If Patch 2 depends on a field created in Patch 1, they must be separate and ordered in patches.txt or else Patch 2 may run first and fail with column not found errors.
+
+
 
 

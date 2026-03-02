@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import now
 
 
 def send_job_ready_email(job_card_name):
@@ -28,3 +29,20 @@ def manager():
 	frappe.only_for("QF Manager")
 
 	return "Action executed successfully by Manager"
+
+
+@frappe.whitelist()
+def custom_get_count(doctype, filters=None, debug=False, cache=False):
+	# First log the request to Audit Log, then call original behaviour
+	frappe.get_doc(
+		{
+			"doctype": "Audit Log",
+			"doctype_name": doctype,
+			"action": "count_queried",
+			"user": frappe.session.user,
+			"timestamp": now(),
+		}
+	).insert(ignore_permissions=True)
+	from frappe.client import get_count
+
+	return get_count(doctype, filters, debug, cache)
