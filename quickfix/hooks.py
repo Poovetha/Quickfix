@@ -5,9 +5,18 @@ app_description = "quickfix"
 app_email = "poovethapalanivelu@gmail.com"
 app_license = "mit"
 
-fixtures = ["Device Type", "Role", "Custom DocPerm"]
+fixtures = [
+	"Device Type",
+	"Role",
+	"Custom DocPerm",
+	"Custom Field",
+	"Property Setter",
+	"Workspace",
+	{"doctype": "Device Type", "filters": [["name", "in", ["Mobile", "Tablet", "Laptop"]]]},
+	"QuickFix Settings",
+]
 
-after_install = "quickfix.hook.after_install"
+after_install = {"quickfix.hook.after_install", "quickfix.hook.fixtures"}
 
 before_uninstall = "quickfix.hook.before_uninstall"
 
@@ -16,6 +25,10 @@ extend_bootinfo = "quickfix.hook.extend_bootinfo"
 on_session_creation = "quickfix.hook.session_creation"
 
 on_logout = "quickfix.hook.session_logout"
+
+override_whitelisted_methods = {"frappe.client.get_count": "quickfix.api.custom_get_count"}
+
+app_include_js = "quickfix.bundle.js"
 
 # override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJobCard"}
 
