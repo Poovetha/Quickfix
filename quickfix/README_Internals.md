@@ -230,6 +230,8 @@ Explain fieldname collision risk: what happens if your Custom Field has the same
 Explain patching order: if Patch 1 creates a Custom Field and Patch 2 reads it, why must they be separate entries in patches.txt and never merged?
     A patch is a one time update script that safely changes the database during the bench migrate. If Patch 2 depends on a field created in Patch 1, they must be separate and ordered in patches.txt or else Patch 2 may run first and fail with column not found errors.
 
+    
+
 
 
 

@@ -16,7 +16,7 @@ fixtures = [
 	"QuickFix Settings",
 ]
 
-after_install = {"quickfix.hook.after_install", "quickfix.hook.fixtures"}
+after_install = {"quickfix.hook.after_install", "quickfix.hook.fixtures", "quickfix.monkey_patch.apply_all"}
 
 before_uninstall = "quickfix.hook.before_uninstall"
 
@@ -29,6 +29,15 @@ on_logout = "quickfix.hook.session_logout"
 override_whitelisted_methods = {"frappe.client.get_count": "quickfix.api.custom_get_count"}
 
 app_include_js = "quickfix.bundle.js"
+
+jinja = {
+	"methods": ["quickfix.hook.get_shop_name"],
+	"filters": ["quickfix.hook.format_job"],
+}
+
+doc_events = {
+	"*": {"on_update": "quickfix.api.log", "on_submit": "quickfix.api.log", "on_cancel": "quickfix.api.log"}
+}
 
 # override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJobCard"}
 
