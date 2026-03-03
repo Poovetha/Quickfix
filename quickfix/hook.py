@@ -62,6 +62,15 @@ def fixtures():
 	)
 
 
+def get_shop_name():
+	settings = frappe.get_single_value("Quickfix Settings", "shop_name")
+	return settings
+
+
+def format_job(value):
+	return f"JOB#{value}"
+
+
 class TestGetCountOverride(FrappeTestCase):
 	def test_override_is_called(self):
 		"""Confirm override runs by checking Audit Log entry"""
