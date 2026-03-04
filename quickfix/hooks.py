@@ -16,7 +16,7 @@ fixtures = [
 	"QuickFix Settings",
 ]
 
-after_install = {"quickfix.hook.after_install", "quickfix.hook.fixtures", "quickfix.monkey_patch.apply_all"}
+after_install = {"quickfix.hook.after_install", "quickfix.hook.fixtures"}
 
 before_uninstall = "quickfix.hook.before_uninstall"
 

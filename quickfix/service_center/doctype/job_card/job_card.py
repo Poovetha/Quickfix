@@ -38,10 +38,8 @@ class JobCard(Document):
 		for parts in self.parts_used:
 			stock = frappe.get_value("Spare Part", {"part_name": parts.part_name}, ["stock_qty"]) or 0
 			final = stock - parts.quantity
-			frappe.db.set_value(
-				"Spare Part", {"part_name": parts.part_name}, "stock_qty", final, ignore_permissions=True
-			)
-			# Here ignore_permissions is for if anyone dont have permission to modify the spare part doctype ,
+			frappe.db.set_value("Spare Part", {"part_name": parts.part_name}, "stock_qty", final)
+			# Here ignore_permissions is for if anyone dont have permission to modify the spare part doctype ,but frappe 16 frappe.db.set_value() no longer supports ignore_permissions=True.
 			# this will bypass the permission and set the value. It is needed because it is systematic logic.
 
 		invoice = frappe.get_doc(

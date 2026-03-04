@@ -229,9 +229,20 @@ Explain fieldname collision risk: what happens if your Custom Field has the same
 
 Explain patching order: if Patch 1 creates a Custom Field and Patch 2 reads it, why must they be separate entries in patches.txt and never merged?
     A patch is a one time update script that safely changes the database during the bench migrate. If Patch 2 depends on a field created in Patch 1, they must be separate and ordered in patches.txt or else Patch 2 may run first and fail with column not found errors.
+Register TWO validate handlers on Job Card - one in your main controller and one in doc_events. In README_internals.md: in what order do they run? What happens if both raise a frappe.ValidationError?
+    Controller method runs first, followed by doc_events hooks. If both raise frappe.ValidationError, execution stops at the first error and hooks do not run.
 
-    
+Demonstrate: what happens when you register "*" AND a specific DocType handler for the same event? Do both run?
+    If both "*" and a specific DocType handler are registered, both execute. The global "*" handler runs first, then the specific handler. If the first raises an exception, the second will not execute.
 
+What is the _qf_patched guard for? What breaks without it?
+    It prevents the patch from being applied multiple times. Without it This can lead to infinite recursion.
+
+Why is isolating patches in monkey_patches.py better than scattering them in __init__.py?
+    Putting monkey patches in monkey_patches.py is better because it keeps all risky core changes in one separate file. This makes it easier to test and study better than in __init__.py because this will run frequently when app loads which will leads to error and hard to find error.
+
+What is the correct escalation path: try doc_events first - then_override_doctype_class - then override_whitelisted_methods - then monkey patch.Why is this the order?
+    We first try doc_events, then override_doctype_class, then override_whitelisted_methods, and use monkey patch only as a last option.This order is followed because risk increases at each step, and monkey patching directly changes core code, which is the most dangerous.
 
 
 
