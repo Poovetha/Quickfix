@@ -41,8 +41,100 @@ frappe.ui.form.on("Job Card", {
 		if (frappe.boot.quickfix_shop_name) {
 			frm.page.set_title(frappe.boot.quickfix_shop_name);
 		}
+
+		if (frm.doc.docstatus == 1) {
+			console.log("sdfghjk");
+			frm.add_custom_button("Reject Job", () => {
+				let d = new frappe.ui.Dialog({
+					title: "Reject Job",
+					fields: [
+						{
+							label: "Rejection Reason",
+							fieldname: "reason",
+							fieldtype: "Small Text",
+							reqd: 1,
+						},
+					],
+					primary_action_label: "Submit",
+					primary_action(values) {
+						frm.set_value("status", "Cancelled");
+						frm.save();
+						d.hide();
+					},
+				});
+				d.show();
+			});
+		}
+		frm.add_custom_button("Transfer Technician", () => {
+			frappe.prompt(
+				[
+					{
+						label: "New Technician",
+						fieldname: "technician",
+						fieldtype: "Link",
+						options: "User",
+						reqd: 1,
+					},
+				],
+				function (values) {
+					frappe.confirm(
+						"Are you sure you want to transfer this job to another technician?",
+						function () {
+							frappe.call({
+								method: "quickfix.job_card.transfer_technician",
+								args: {
+									job_card: frm.doc.name,
+									technician: values.technician,
+								},
+								callback: function (r) {
+									if (!r.exc) {
+										frappe.msgprint("Technician transferred successfully");
+										frm.set_value("assigned__technician", values.technician);
+										frm.trigger("assigned__technician");
+										frm.reload_doc();
+									}
+								},
+							});
+						}
+					);
+				}
+			);
+		});
+
+		if (!frappe.user.has_role("Manager")) {
+			frm.set_df_property("customer_phone", "hidden", 1);
+		}
+	},
+	status(frm) {
+		if (frm.doc.status == "Delivered") {
+			frappe.show_alert("Delivered");
+		}
+	},
+
+	assigned__technician(frm) {
+		if (!frm.doc.assigned__technician) return;
+		frappe.db
+			.get_value("Technician", frm.doc.assigned__technician, "specialization")
+			.then((r) => {
+				if (r.message.specialization !== frm.doc.device_type) {
+					frappe.msgprint("Technician specialization does not match the device type.");
+				}
+			});
+	},
+
+	onload(frm) {
+		frappe.realtime.on("job_ready", function (data) {
+			frappe.show_alert({
+				message: "Job is Ready!",
+				indicator: "green",
+			});
+		});
 	},
 });
-frappe.realtime.on("job_ready", (data) => {
-	frappe.show_progress("Job Status", 100, 100, "Completing");
+
+frappe.ui.form.on("Part Used", {
+	quantity(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		frappe.model.set_value(cdt, cdn, "total_price", row.quantity * row.unit_price);
+	},
 });

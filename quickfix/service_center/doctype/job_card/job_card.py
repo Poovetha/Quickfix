@@ -78,3 +78,12 @@ class JobCard(Document):
 	def on_trash(self):
 		if not self.status == "Cancelled" and not self.status == "Draft":
 			frappe.throw("Cant cancel the job card, Only draft or cancelled can be deleted ")
+
+
+@frappe.whitelist()
+def transfer_technician(job_card, technician):
+	doc = frappe.get_doc("Job Card", job_card)
+	doc.technician = technician
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	return "Technician updated"

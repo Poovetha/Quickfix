@@ -244,5 +244,22 @@ Why is isolating patches in monkey_patches.py better than scattering them in __i
 What is the correct escalation path: try doc_events first - then_override_doctype_class - then override_whitelisted_methods - then monkey patch.Why is this the order?
     We first try doc_events, then override_doctype_class, then override_whitelisted_methods, and use monkey patch only as a last option.This order is followed because risk increases at each step, and monkey patching directly changes core code, which is the most dangerous.
 
+Making a frappe.call inside the validate client event (before_save handler) - explain why this does not work
+    validate runs synchronously before the document is saved, but frappe.call() is asynchronous.The server response may return after the save process has already started, so the result of frappe.call() cannot handle the validate before the save option is executes.
 
+Using onload or refresh for async data fetches:
+    onload or refresh are suitable for async data fetching because they run when the form loads or refreshes, not during the save process.It allow frappe.call() which didn't make any changes in validation.
+    
+describe what a Tree DocType is (example: Account,Employee hierarchy). What is doctype_tree_js used for and what extra fields does a tree DocType require (parent field, is_group)?
+    A Tree DocType is used to show data in a parent-child structure, like Account groups or Employee hierarchy. doctype_tree_js is used to control how the tree looks and works in the UI, and it needs fields like parent_field and is_group.
 
+When would a consultant use Client Script DocType vs shipped JS?
+    A consultant uses Client Script DocType for quick UI customizations directly from the system without needing code deployment.
+    App developer uses shipped JS in the app when the logic must be version controlled, tested, and maintained in the codebase.
+
+What are the risks of Client Script DocType in production?
+    Client Scripts are not version controlled and changes happen directly in production, which can accidentally break forms or workflows.They are hard to track, review, and maintain.
+
+ Explain why hiding in JS is not a security measure.
+    Hiding a field using JavaScript only hides it in the user interface, but the data still exists in the backend.
+Users can still access the field through API calls or database queries, so JS hiding is not a real security measure; proper backend permissions must be used.
