@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../../../apps/quickfix/quickfix/public/js/quickfix.bundle.js"],
   "sourcesContent": ["frappe.ui.form.on(\"*\", {\n\trefresh(frm) {\n\t\tif (frappe.boot.quickfix_shop_name && frm.doc) {\n\t\t\tfrm.page.set_title(frappe.boot.quickfix_shop_name);\n\t\t}\n\t},\n});\n"],
-  "mappings": "MAAA,OAAO,GAAG,KAAK,GAAG,IAAK,CACtB,QAAQA,EAAK,CACR,OAAO,KAAK,oBAAsBA,EAAI,KACzCA,EAAI,KAAK,UAAU,OAAO,KAAK,kBAAkB,CAEnD,CACD,CAAC",
-  "names": ["frm"]
+  "mappings": ";;AAAA,SAAO,GAAG,KAAK,GAAG,KAAK;AAAA,IACtB,QAAQ,KAAK;AACZ,UAAI,OAAO,KAAK,sBAAsB,IAAI,KAAK;AAC9C,YAAI,KAAK,UAAU,OAAO,KAAK,kBAAkB;AAAA,MAClD;AAAA,IACD;AAAA,EACD,CAAC;",
+  "names": []
 }

@@ -1,0 +1,53 @@
+{
+ "app": "quickfix",
+ "charts": [
+  {
+   "chart_name": "Today's Revenue",
+   "label": "Today's Revenue"
+  },
+  {
+   "chart_name": "Open Job Cards",
+   "label": "Open Job Cards"
+  },
+  {
+   "chart_name": "Job Status",
+   "label": "Job Status"
+  }
+ ],
+ "content": "[]",
+ "creation": "2026-03-09 16:30:58.003597",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Assessment",
+ "link_type": "DocType",
+ "links": [],
+ "modified": "2026-03-09 17:00:57.435502",
+ "modified_by": "Administrator",
+ "module": "service_center",
+ "name": "Assessment",
+ "number_cards": [
+  {
+   "number_card_name": "Today's Revenue"
+  },
+  {
+   "number_card_name": "Total Open Job Cards"
+  }
+ ],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "sequence_id": 0.0,
+ "shortcuts": [],
+ "title": "Assessment",
+ "type": "Workspace"
+}

@@ -27,6 +27,7 @@
   "parts_total",
   "labour_charge",
   "final_amount",
+  "final_amt",
   "payment_status",
   "delivery_date",
   "remarks",
@@ -198,13 +199,19 @@
    "label": "Status",
    "options": "Draft\nPending Diagnosis\nAwaiting Customer Approval\nIn Repair\nReady for Delivery\nDelivered\nCancelled",
    "search_index": 1
+  },
+  {
+   "fieldname": "final_amt",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Final Amt"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-09 08:07:05.253439",
+ "modified": "2026-03-09 12:07:24.712814",
  "modified_by": "Administrator",
  "module": "service_center",
  "name": "Job Card",

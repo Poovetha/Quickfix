@@ -66,3 +66,23 @@ def custom_get_count(doctype, filters=None, debug=False, cache=False):
 	from frappe.client import get_count
 
 	return get_count(doctype, filters, debug, cache)
+
+
+def get_status_chart_data():
+	data = frappe.db.sql(
+		"""
+        SELECT status, COUNT(name) as count
+        FROM `tabJob Card`
+        GROUP BY status
+    """,
+		as_dict=True,
+	)
+
+	labels = []
+	values = []
+
+	for d in data:
+		labels.append(d.status)
+		values.append(d.count)
+
+	return {"labels": labels, "datasets": [{"name": "Job Cards", "values": values}]}

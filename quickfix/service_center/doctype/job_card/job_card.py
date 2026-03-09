@@ -25,6 +25,8 @@ class JobCard(Document):
 		if not self.customer_email:
 			frappe.throw("Email is required ")
 
+		self.final_amt = self.final_amount
+
 	def before_submit(self):
 		if not self.status == "Ready for Delivery":
 			frappe.throw("Not ready for delivery")
@@ -78,6 +80,9 @@ class JobCard(Document):
 	def on_trash(self):
 		if not self.status == "Cancelled" and not self.status == "Draft":
 			frappe.throw("Cant cancel the job card, Only draft or cancelled can be deleted ")
+
+	def before_print(self, print_settings=None):
+		self.print_summary = f"{self.customer_name} - {self.device_brand} {self.device_model}"
 
 
 @frappe.whitelist()

@@ -289,3 +289,37 @@ When must you use Script Report?
 
 Describe a scenario where using Report Builder in production would be a mistake.
     Using Report Builder in production would be a mistake when the report requires business logic or aggregations, because Report Builder cannot run custom backend logic.
+
+how does Frappe determine which language to use when printing?
+    The system checks the language in the following order:
+
+    1. The language selected in the User settings.
+    2. The system default language in System Settings.
+    3. The language passed in the request (_lang parameter).
+
+    All user-facing strings wrapped with _("text") in the print format are
+    automatically translated based on the selected language.
+
+Putting a frappe.get_all() call inside the Jinja template directly
+    Using frappe.get_all() directly in Jinja templates is possible but mostly not used because it mixes database access with presentation logic.
+
+Pre-compute in before_print() and attach to self, then reference in template as doc.precomputed field.
+    Pre-computing required data in the controller using before_print() and attaching it to the document provides a results in more maintainable and efficient code.
+
+explain the difference between "raw printing" (sending ESC/POS commands to a thermal printer) and Frappe's HTML-PDF rendering via WeasyPrint.
+    Raw printing sends ESC/POS commands directly to a thermal printer. These commands control text, alignment, barcode printing, and paper cutting. It is very fast and suitable for receipt printers, but it does not support HTML or CSS styling.
+
+    In contrast, Frappe’s HTML-PDF rendering converts HTML print formats into PDF using WeasyPrint. The layout is written using HTML, CSS, and Jinja templates, allowing rich formatting such as tables and styled sections. However, it is slower than raw printing and some modern CSS properties are not fully supported.
+
+List 3 CSS properties that work in a browser but fail in WeasyPrint
+    Three CSS properties that work in browsers but may not work properly in WeasyPrint are
+    display: grid
+    display: flex
+    position: sticky
+
+Use format_value() for every numeric field in the template - demonstrate what happens without it vs with it for a Currency field
+    Without format_value(), a currency field like {{ doc.final_amount }} prints as a plain number (e.g., 1700).
+    With frappe.format_value(doc.final_amount, {"fieldtype": "Currency"}), it is properly formatted with currency symbol and separators (e.g., ₹1,700.00).
+
+    
+
