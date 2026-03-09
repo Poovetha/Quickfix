@@ -63,7 +63,7 @@ def fixtures():
 
 
 def get_shop_name():
-	settings = frappe.get_single_value("Quickfix Settings", "shop_name")
+	settings = frappe.get_single_value("QuickFix Settings", "shop_name")
 	return settings
 
 
