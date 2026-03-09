@@ -260,6 +260,32 @@ When would a consultant use Client Script DocType vs shipped JS?
 What are the risks of Client Script DocType in production?
     Client Scripts are not version controlled and changes happen directly in production, which can accidentally break forms or workflows.They are hard to track, review, and maintain.
 
- Explain why hiding in JS is not a security measure.
+Explain why hiding in JS is not a security measure.
     Hiding a field using JavaScript only hides it in the user interface, but the data still exists in the backend.
-Users can still access the field through API calls or database queries, so JS hiding is not a real security measure; proper backend permissions must be used.
+    Users can still access the field through API calls or database queries, so JS hiding is not a real security measure; proper backend permissions must be used.
+
+Demonstrate and explain the issues and solutions with respect to f-string SQL and the parameterized pattern.
+    Using f-strings in SQL directly inserts user input into the query, which can cause SQL injection vulnerabilities. Using parameterized queries (%s) keeps input separate from SQL, making the query secure and safer.
+
+Add a EXPLAIN statement in bench console for your query - screenshot the result and identify if an index is being used on the status column
+   ![Result](image-1.png)
+   The EXPLAIN query was executed in the bench console to analyze how the database executes the query filtering by status. The result shows key: status, which confirms that the index on the status column is being used, improving query performance.
+
+In README_internals.md: explain when you would use a Prepared Report vs a real-time Script Report.
+    Prepared Reports are used for large datasets and run in the background worker, storing the result in cache for faster loading.
+    Real-time Script Reports run immediately when opened and always fetch the latest data from the database.
+
+What are the staleness tradeoffs?
+    The tradeoff is staleness, if data changes after the report is prepared, users will still see the old cached result until the report is generated again.
+
+Describe the caching risk: if underlying data changes between report preparations,what does the user see?
+    If the underlying data changes after the report is prepared, the user will still see the previous cached report result.The report will not reflect the latest updates until it is prepared again. So users may temporarily see expired data.
+
+In README_internals.md: when is Report Builder appropriate? 
+    Report Builder is used when we need simple reports that display fields from a single DocType with basic filters, sorting, and grouping, without writing any code.
+
+When must you use Script Report? 
+    Script Reports must be used when the report requires complex logic, calculations, joins across multiple DocTypes, or custom Python queries.
+
+Describe a scenario where using Report Builder in production would be a mistake.
+    Using Report Builder in production would be a mistake when the report requires business logic or aggregations, because Report Builder cannot run custom backend logic.
