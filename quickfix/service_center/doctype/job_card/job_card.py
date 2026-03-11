@@ -61,7 +61,7 @@ class JobCard(Document):
 		# frappe.publish_realtime() sends real-time updates from the server to the user interface without page refresh via socket io.frappe.publish_realtime() is used to send live updates from the server to the browser instantly.No page refresh needed
 		frappe.publish_realtime("job_ready", {"job_card": self.name}, user=self.owner)
 
-		frappe.enqueue(method="quickfix.api.send_job_ready_email", job_card_name=self.name)
+		frappe.enqueue(method="quickfix.api.send_job_ready_email", queue="short", job_card_name=self.name)
 
 	def on_cancel(self):
 		self.status = "Cancelled"
