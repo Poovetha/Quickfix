@@ -71,7 +71,8 @@
    "fieldname": "assigned__technician",
    "fieldtype": "Link",
    "label": "Assigned  Technician",
-   "options": "Technician"
+   "options": "Technician",
+   "search_index": 1
   },
   {
    "fieldname": "customer_phone",
@@ -211,7 +212,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-09 12:07:24.712814",
+ "modified": "2026-03-10 12:41:19.141702",
  "modified_by": "Administrator",
  "module": "service_center",
  "name": "Job Card",

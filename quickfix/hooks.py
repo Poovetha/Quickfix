@@ -39,6 +39,12 @@ doc_events = {
 	"*": {"on_update": "quickfix.api.log", "on_submit": "quickfix.api.log", "on_cancel": "quickfix.api.log"}
 }
 
+scheduler_events = {
+	"daily": ["quickfix.api.check_low_stock"],
+	"cron": {"0 2 1 * *": ["quickfix.api.monthly_revenue_report"]},
+}
+
+
 # override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJobCard"}
 
 

@@ -321,5 +321,109 @@ Use format_value() for every numeric field in the template - demonstrate what ha
     Without format_value(), a currency field like {{ doc.final_amount }} prints as a plain number (e.g., 1700).
     With frappe.format_value(doc.final_amount, {"fieldtype": "Currency"}), it is properly formatted with currency symbol and separators (e.g., ₹1,700.00).
 
-    
+In README_internals.md: explain the 3 queue names (default, long, short) and when to use each
+    Default queue: Used for normal background jobs that take a moderate amount of time. Most standard asynchronous tasks run here.
+    Short queue: Used for very quick tasks that finish within a few seconds, such as small updates or notifications.
+    Long queue: Used for heavy or time-consuming jobs like report generation, data imports, or large background processing
+
+Explain retry behavior: how many times does Frappe retry a failed background job bydefault?
+    By default, Frappe does not retry failed background jobs automatically 0 tries ,unless retry settings are configured.
+
+how do you disable the scheduler for a specific site? Why would you do this on a dev site?
+    Run bench --site site-name set-config enable_scheduler false to disable the scheduler for that site.To prevent automatic background jobs from running during development and testing this on a dev site.
+
+what happens to scheduled jobs that were queued while the worker was down - do they run when the worker comes back up? 
+    Scheduled jobs that were queued remain in the queue and run when the worker starts again.
+
+N+1 query detection and fix:
+# N+1 PROBLEM - fix this
+job_cards = frappe.get_all("Job Card", fields=["name","assigned_technician"])
+for jc in job_cards:
+tech = frappe.get_doc("Technician", jc.assigned_technician)
+print(tech.technician_name, tech.phone)
+
+    job_cards = frappe.get_all("Job Card",["name","assigned_technician","phone"])
+
+Benchmark both approaches in bench console using Python time module - show the time difference
+    bulk_insert() is significantly faster than individual .insert() calls because it reduces the number of database operations.
+
+Run SHOW INDEX FROM `tabJob Card` in bench console. List the existing indexes.
+In [2]: frappe.db.sql("SHOW INDEX FROM `tabJob Card`")
+Out[2]: 
+(('tabjob card',
+  0,
+  'PRIMARY',
+  1,
+  'name',
+  'A',
+  27,
+  None,
+  None,
+  '',
+  'BTREE',
+  '',
+  '',
+  'NO'),
+ ('tabjob card',
+  1,
+  'amended_from',
+  1,
+  'amended_from',
+  'A',
+  2,
+  None,
+  None,
+  'YES',
+  'BTREE',
+  '',
+  '',
+  'NO'),
+ ('tabjob card',
+  1,
+  'creation',
+  1,
+  'creation',
+  'A',
+  27,
+  None,
+  None,
+  'YES',
+  'BTREE',
+  '',
+  '',
+  'NO')
+
+Add search_index: 1 to the status and assigned_technician fields in your DocType.
+Run bench migrate. Verify the index now appears.
+ ('tabjob card',
+  1,
+  'status_index',
+  1,
+  'status',
+  'A',
+  4,
+  None,
+  None,
+  'YES',
+  'BTREE',
+  '',
+  '',
+  'NO'),
+ ('tabjob card',
+  1,
+  'assigned__technician_index',
+  1,
+  'assigned__technician',
+  'A',
+  2,
+  None,
+  None,
+  'YES',
+  'BTREE',
+  '',
+  '',
+  'NO'))
+
+Explain: why would you NOT add a search index to every field? What is the performance cost of over-indexing?
+  Indexes improve search and filtering speed, but too many indexes increase database storage and write overhead.
 
