@@ -1,3 +1,5 @@
+from datetime import date
+
 import frappe
 from frappe.utils import now, today
 
@@ -109,6 +111,11 @@ def custom_get_count(doctype, filters=None, debug=False, cache=False):
 
 
 def get_status_chart_data():
+	cache_key = "quickfix_status_chart"
+	cached_data = frappe.cache.get_value(cache_key)
+	if cached_data:
+		return cached_data
+
 	data = frappe.db.sql(
 		"""
 		SELECT status, COUNT(name) as count
@@ -125,4 +132,45 @@ def get_status_chart_data():
 		labels.append(d.status)
 		values.append(d.count)
 
+	frappe.cache.set_value(cache_key, data, expires_in_sec=300)
+
 	return {"labels": labels, "datasets": [{"name": "Job Cards", "values": values}]}
+
+
+@frappe.whitelist(allow_guest=True)
+def get_job_summary():
+	job_card_name = frappe.form_dict.get("job_card_name")
+
+	if not job_card_name:
+		frappe.local.response["http_status_code"] = 404
+		return {"error": "Not found"}
+
+	job_card = frappe.db.get_value(
+		"Job Card", job_card_name, ["name", "customer_name", "status", "creation"], as_dict=True
+	)
+
+	if not job_card:
+		frappe.local.response["http_status_code"] = 404
+		return {"error": "Not found"}
+
+	return {
+		"job_card_name": job_card.name,
+		"customer_name": job_card.customer_name,
+		"status": job_card.status,
+		"created_on": job_card.creation,
+		"summary_generated_on": date.today(),
+	}
+
+
+@frappe.whitelist(allow_guest=True)
+def get_job_by_phone():
+	ip = frappe.local.request_ip
+	key = f"rate_limit:{ip}"
+
+	count = frappe.cache().get(key) or 0
+	if int(count) >= 5:
+		frappe.local.response["http_status_code"] = 429
+		return {"error": "Too many requests"}
+
+	frappe.cache().set(key, int(count) + 1, 60)
+	return {"success": "Request allowed"}

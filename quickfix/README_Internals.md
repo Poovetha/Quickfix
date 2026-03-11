@@ -427,3 +427,148 @@ Run bench migrate. Verify the index now appears.
 Explain: why would you NOT add a search index to every field? What is the performance cost of over-indexing?
   Indexes improve search and filtering speed, but too many indexes increase database storage and write overhead.
 
+1) GET /api/resource/Job Card - list Job Cards (use session cookie from browser)
+![alt text](image-2.png) 
+
+2) GET /api/resource/Job Card/JC-0001 - single doc
+![alt text](image-3.png)
+
+3) POST /api/resource/Spare Part - create a part
+![alt text](image-4.png)
+
+4) PUT /api/resource/Spare Part/SCREW-PART-2026-0002 - Update a field
+![alt text](image-5.png)
+
+5) DELETE /api/resource/Spare Part/002-PART-2026-0005 - delete it
+![alt text](image-6.png)
+
+Make a curl request with: Authorization: token api_key:api_secret
+Token Authentication
+API token authentication allows external systems to access Frappe APIs using an API key and secret.
+Path:
+GET /api/resource/Job Card
+Curl:
+curl --location 'http://quickfix-dev.localhost:8011/api/resource/Job%20Card' \
+--header 'Authorization: token api_key:api_secret'
+
+Explain in README: what is the difference between session cookie auth and token auth? Which is appropriate for browser use and which for server-to-server?
+
+Session Cookie Authentication uses a browser session (sid cookie) created when a user logs into the UI and requires CSRF protection. It is mainly used for browser-based interactions.
+Session Cookie Authentication → used for browser-based access.
+
+Token Authentication uses an API key and API secret sent in the Authorization header and does not require CSRF. It is used for server-to-server communication or external API integrations.
+Token Authentication → used for server-to-server API communication.
+
+Custom whitelisted method design
+![alt text](image-7.png)
+
+
+frappe.cache.get_value("bootinfo")- what does it contain?
+i got an error,
+    This function retrieves a string value from Redis.
+    Internally it uses the Redis GET command.
+    It works only if the key is stored as a string.
+    If the key is stored as hash/list/set, Redis throws:
+
+    WRONGTYPE Operation against a key holding the wrong kind of value
+
+    frappe.cache.hget("bootinfo", frappe.session.user) - The desired output i got
+
+    Works when the key is a hash (dictionary-like structure).
+    it retrieves bootinfo stored for the current user session.
+
+Run: frappe.cache.get_value("quickfix:translations") or similar - find where translations are cached
+    In [19]: frappe.cache.get_value("quickfix:translations")
+    In [20]: frappe.cache.get_keys("*trans*")
+    Out[20]: 
+    [b'_e2f5f9db8fdce51d|lang_user_translations',
+    b'_e2f5f9db8fdce51d|merged_translations']
+    In [26]: frappe.cache.get_value("merged_translations")
+    Out[26]: 
+    {'en': {'Antigua and Barbuda': 'Antigua & Barbuda',
+    'Bolivia, Plurinational State of': 'Bolivia',
+    'Bonaire, Sint Eustatius and Saba': 'Caribbean Netherlands',
+    'Bosnia and Herzegovina': 'Bosnia & Herzegovina',
+    'Brunei Darussalam': 'Brunei',
+    'Congo': 'Congo - Brazzaville',
+    'Congo, The Democratic Republic of the': 'Congo - Kinshasa',
+    'Czech Republic': 'Czechia',
+    'Falkland Islands (Malvinas)': 'Falkland Islands',
+    'Heard Island and McDonald Islands': 'Heard & McDonald Islands',
+    'Holy See (Vatican City State)': 'Vatican City',
+    'Hong Kong': 'Hong Kong SAR China',
+    'Ivory Coast': 'Côte d’Ivoire',
+    'Korea, Democratic Peoples Republic of': 'North Korea',
+    'Korea, Republic of': 'South Korea',
+    'Lao Peoples Democratic Republic': 'Laos',
+    'Macao': 'Macao SAR China',
+    'Macedonia': 'North Macedonia',
+    'Micronesia, Federated States of': 'Micronesia',
+    'Moldova, Republic of': 'Moldova',
+    'Myanmar': 'Myanmar (Burma)',
+    'Palestinian Territory, Occupied': 'Palestinian Territories',
+    'Pitcairn': 'Pitcairn Islands',
+    'Russian Federation': 'Russia',
+    'Saint Barthélemy': 'St. Barthélemy',
+    'Saint Helena, Ascension and Tristan da Cunha': 'St. Helena',
+    'Saint Kitts and Nevis': 'St. Kitts & Nevis',
+    'Saint Lucia': 'St. Lucia',
+    'Saint Martin (French part)': 'St. Martin',
+    'Saint Pierre and Miquelon': 'St. Pierre & Miquelon',
+    'Saint Vincent and the Grenadines': 'St. Vincent & Grenadines',
+    'Sao Tome and Principe': 'São Tomé & Príncipe',
+    'Sint Maarten (Dutch part)': 'Sint Maarten',
+    'South Georgia and the South Sandwich Islands': 'South Georgia & South Sandwich Islands',
+    'Svalbard and Jan Mayen': 'Svalbard & Jan Mayen',
+    'Swaziland': 'Eswatini',
+    'Trinidad and Tobago': 'Trinidad & Tobago',
+    'Turks and Caicos Islands': 'Turks & Caicos Islands',
+    'United States Minor Outlying Islands': 'U.S. Outlying Islands',
+    'Venezuela, Bolivarian Republic of': 'Venezuela',
+    'Virgin Islands, British': 'British Virgin Islands',
+    'Virgin Islands, U.S.': 'U.S. Virgin Islands',
+    'Wallis and Futuna': 'Wallis & Futuna'}}
+
+Run frappe.clear_cache() and observe what changes in the browser
+    frappe.clear_cache() clears cached data like metadata, permissions, and translations from Redis. After refreshing the browser, the Desk reloads and fresh data is loaded from the database.
+
+list 5 things Frappe caches in Redis (bootinfo, DocType metadata/meta, website context, translations, user permissions)
+
+    Bootinfo – Stores user session data like roles, modules, system defaults, and permissions used when loading the Desk.
+    DocType Metadata (Meta) – Stores DocType structure such as fields, permissions, and layout.
+    Website Context – Caches data used for rendering website pages.
+    Translations – Stores translated UI strings for different languages.
+    User Permissions – Caches permission rules to quickly determine what data a user can access.
+
+Demonstrate stale UI: without cache invalidation, show that the dashboard chart shows old data after a Job Card status change
+    Without cache invalidation, the dashboard chart continues showing old data after a Job Card status change because the data is retrieved from Redis cache for 300 seconds. After adding cache invalidation in on_update, the cache is cleared and the chart updates with fresh data.
+
+    
+
+
+
+
+
+
+
+What Python functions/modules are blocked in the Server Script sandbox?
+In the Server Script sandbox, several Python modules are blocked for security reasons, including:
+->os
+->sys
+->subprocess
+
+These modules are restricted to prevent access to the server’s operating system, file system, and execution of system commands.
+
+List 3 things you CANNOT do in a Server Script that you can do in app code.
+You cannot import arbitrary Python modules, execute system commands, or implement complex application logic like background workers or external integrations.
+
+Give 2 scenarios where Server Scripts are acceptable, and 2 where you should insist on app code instead
+Server Scripts are useful for small DocType automations or quick validations without changing app code.
+When to use app code:
+For complex business logic, integrations, or features requiring proper testing and version control.
+
+What is the governance/maintainability risk of Server Scripts?
+Server Scripts are stored in the database rather than version-controlled files, making them harder to track, review, and maintain.
+
+
+
