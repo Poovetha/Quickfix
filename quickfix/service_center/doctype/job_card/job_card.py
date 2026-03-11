@@ -84,6 +84,9 @@ class JobCard(Document):
 	def before_print(self, print_settings=None):
 		self.print_summary = f"{self.customer_name} - {self.device_brand} {self.device_model}"
 
+	def on_update(self):
+		frappe.cache.delete_value("quickfix_status_chart")
+
 
 @frappe.whitelist()
 def transfer_technician(job_card, technician):
