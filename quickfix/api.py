@@ -1,12 +1,23 @@
+import re
 from datetime import date
 
 import frappe
+from frappe.rate_limiter import rate_limit
 from frappe.utils import now, today
 
 
-def send_job_ready_email(job_card_name):
-	doc = frappe.get_doc("Job Card", job_card_name)
-	frappe.sendmail(recipients=[doc.customer_email], template="Job Card", args={"doc": doc})
+def send_job_ready_email(name):
+	doc = frappe.get_doc("Job Card", name)
+	pdf = frappe.get_print("Job Card", doc.name, print_format="Job Card", as_pdf=True)
+	try:
+		frappe.sendmail(
+			recipients=[doc.customer_email],
+			template="Job Card",
+			args={"doc": doc},
+			attachments=[{"fname": f"{doc.name}.pdf", "fcontent": pdf}],
+		)
+	except Exception:
+		frappe.log_error(title="Email Sending Failed", message=frappe.get_traceback())
 
 
 # audit log doctype
@@ -41,6 +52,10 @@ def check_low_stock():
 		)
 
 
+# def test_error_job():
+# 	a = 10 / 0
+
+
 @frappe.whitelist()
 def add():
 	doc = frappe.get_doc("Job Card", "JC-2026-00001", check_permission=True)
@@ -70,7 +85,7 @@ def monthly_revenue_report():
 	total_revenue = 0
 	for job in delivered_jobs:
 		total_revenue += job.total_amount or 0
-	frappe.logger().info(f"Total Monthly Revenue: {total_revenue}")
+	frappe.logger.info(f"Total Monthly Revenue: {total_revenue}")
 
 
 def cancel_draft_job_cards():
@@ -87,6 +102,12 @@ def bulk_insert():
 	values = [(f"LOG-{i}", "Bulk_insert", now()) for i in range(500)]
 
 	frappe.db.bulk_insert("Audit Log", ["name", "action", "timestamp"], values)
+
+
+def test_secret():
+	test = frappe.conf.get("payment_api_key")
+	print(test)
+	return test
 
 
 @frappe.whitelist()
@@ -174,3 +195,24 @@ def get_job_by_phone():
 
 	frappe.cache().set(key, int(count) + 1, 60)
 	return {"success": "Request allowed"}
+
+
+@frappe.whitelist()
+def trigger_error():
+	frappe.enqueue("quickfix.api.test_error_job", queue="default")
+
+
+@frappe.whitelist(allow_guest=True)
+@rate_limit(limit=10, seconds=60)
+def track_job(phone):
+	phone = re.sub(r"\D", "", phone)[:10]
+
+	if not phone:
+		frappe.throw("Invalid phone number")
+
+	jobs = frappe.get_all("Job Card", filters={"customer_phone": phone}, fields=["name", "status"])
+
+	if not jobs:
+		frappe.throw("No jobs found for this phone")
+
+	return jobs

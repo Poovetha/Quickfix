@@ -336,7 +336,7 @@ what happens to scheduled jobs that were queued while the worker was down - do t
     Scheduled jobs that were queued remain in the queue and run when the worker starts again.
 
 N+1 query detection and fix:
-# N+1 PROBLEM - fix this
+N+1 PROBLEM - fix this
 job_cards = frappe.get_all("Job Card", fields=["name","assigned_technician"])
 for jc in job_cards:
 tech = frappe.get_doc("Technician", jc.assigned_technician)
@@ -543,14 +543,6 @@ list 5 things Frappe caches in Redis (bootinfo, DocType metadata/meta, website c
 Demonstrate stale UI: without cache invalidation, show that the dashboard chart shows old data after a Job Card status change
     Without cache invalidation, the dashboard chart continues showing old data after a Job Card status change because the data is retrieved from Redis cache for 300 seconds. After adding cache invalidation in on_update, the cache is cleared and the chart updates with fresh data.
 
-    
-
-
-
-
-
-
-
 What Python functions/modules are blocked in the Server Script sandbox?
 In the Server Script sandbox, several Python modules are blocked for security reasons, including:
 ->os
@@ -570,5 +562,74 @@ For complex business logic, integrations, or features requiring proper testing a
 What is the governance/maintainability risk of Server Scripts?
 Server Scripts are stored in the database rather than version-controlled files, making them harder to track, review, and maintain.
 
+After making a JS change, the browser shows old JS. Explain: what command clears the asset cache? What role does bench build --app quickfix play?
+Bench build and Bench clear-cache
+Role of bench build --app quickfix:
+It rebuilds the frontend assets (JS, CSS) of the quickfix app and updates the bundled files so the browser loads the latest changes.
 
 
+After making a DocType change, users see old field labels. What clears the DocType metadata cache?
+bench clear-cache
+This clears the DocType metadata cache, so updated field labels and schema changes appear in the UI.
+
+What fields does an Error Log record contain?
+    The failed background job creates a record in Error Log.
+
+    An Error Log record contains fields such as:
+    Title
+    Error – the exception message
+    Metadata
+    Traceback – full stack trace of the error
+
+How do you requeue a failed job?
+    The failed job can be viewed in RQ Job. Failed jobs appear with status failed.
+    This sends the job back to the queue so the worker can execute it again
+
+If a bug occurs only in production and cannot be reproduced in development, debugging can be done using Error Log, Audit Log, and frappe.logger output.
+    1.Error Log
+    Check Setup → Error Log to view the exception message and traceback. This helps identify the method and code location where the error occurred.
+    2.Audit Log
+    Review the Audit Log to see which user action or document change triggered the issue. This helps track the sequence of events leading to the bug.
+    3.frappe.logger Output
+    Add logging using frappe.logger("quickfix") with .info(), .warning(), and .error() to trace execution. These logs are stored in sites//logs/quickfix.log and help understand runtime behavior in production.
+
+    Using these three sources together helps diagnose production issues without enabling developer mode.
+
+
+Your /track-job endpoint accepts a phone number and returns job status. What 3 attacks are possible if input is not validated?
+If the phone number input is not validated, the following attacks are possible:
+    Injection attacks – malicious input could be used to manipulate queries or backend logic.
+    Data enumeration – attackers can try many phone numbers to discover job details of other users.
+    Denial of Service (DoS) – sending very large or repeated inputs can overload the endpoint.
+
+For each one, write a one-sentence justification: why is this bypass acceptable here (system action, not user-initiated)?
+    1.quickfix/api.py – frappe.get_doc(...).insert(ignore_permissions=True)
+    Justification: This action is performed by the system during an automated background process and not triggered directly by a user.
+
+    2.quickfix/job_card.py – doc.save(ignore_permissions=True)
+    Justification: This update is executed by a scheduled job that syncs system data and therefore requires bypassing user permission checks.
+
+Describe what would happen if a malicious intern set ignore_permissions=True on a @whitelist(allow_guest=True) endpoint
+    If a malicious intern sets ignore_permissions=True on a @frappe.whitelist(allow_guest=True) endpoint, it would allow unauthenticated users to bypass permission checks and perform restricted operations such as creating, modifying, or reading sensitive documents. This could expose confidential data or allow unauthorized data manipulation, creating a major security vulnerability.
+
+Try to access it via /files/filename.pdf directly - what happens?
+    ![alt text](image-9.png)
+    The file will not open because private files cant able to open from the public /files path.
+
+Try to access it via /private/files/filename.pdf - what is required?
+    ![alt text](image-8.png)
+    The file requires authentication. Only logged-in users with permission can access it. If accessed without login, permission denied .
+
+Explain in README: when would you use private files vs public files?
+    Private files should be used for sensitive data such as invoices, job reports, or customer documents that should only be accessible to authorized users.
+    
+    Public files should be used for non-sensitive content such as product images, logos, or documents that can be safely accessed by anyone.
+
+Explain the issues with API key hardcoded in Python source code
+    If an API key is hardcoded in the Python code, it can be exposed if the code is shared or pushed to a repository. Anyone who sees the code can misuse the API key.
+
+Explain: why should secrets NEVER be in common_site_config.json?
+    common_site_config.json is shared by all sites in the bench. If secrets are stored there, other sites may also access them.
+
+Explain: what is the risk of committing site_config.json to git?
+    If site_config.json is pushed to git, sensitive data like API keys and passwords may be exposed to others who access the repository. This can lead to security risks.
