@@ -5,6 +5,8 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import now
 
+logger = frappe.logger("quickfix")
+
 
 class JobCard(Document):
 	def validate(self):
@@ -26,6 +28,23 @@ class JobCard(Document):
 			frappe.throw("Email is required ")
 
 		self.final_amt = self.final_amount
+
+		frappe.utils.logger.set_log_level("INFO")
+		logger = frappe.logger("quickfix", allow_site=True, file_count=50)
+		try:
+			frappe.cache.delete_value("quickfix_status_chart")
+			logger.info(f"Job Card {self.name} updated")
+			logger.info("Testing")
+			logger.warning("Webhook warning")
+			logger.error("Webhook error")
+
+			return {"status": "success"}
+
+		except Exception:
+			frappe.log_error(title="Webhook Handler Error", message=frappe.get_traceback())
+
+			logger.error("Exception occurred in webhook handler")
+			return {"status": "failed"}
 
 	def before_submit(self):
 		if not self.status == "Ready for Delivery":
@@ -61,7 +80,7 @@ class JobCard(Document):
 		# frappe.publish_realtime() sends real-time updates from the server to the user interface without page refresh via socket io.frappe.publish_realtime() is used to send live updates from the server to the browser instantly.No page refresh needed
 		frappe.publish_realtime("job_ready", {"job_card": self.name}, user=self.owner)
 
-		frappe.enqueue(method="quickfix.api.send_job_ready_email", queue="short", job_card_name=self.name)
+		frappe.enqueue(method="quickfix.api.send_job_ready_email", queue="short", name=self.name)
 
 	def on_cancel(self):
 		self.status = "Cancelled"
@@ -84,8 +103,16 @@ class JobCard(Document):
 	def before_print(self, print_settings=None):
 		self.print_summary = f"{self.customer_name} - {self.device_brand} {self.device_model}"
 
-	def on_update(self):
-		frappe.cache.delete_value("quickfix_status_chart")
+	# def on_update(self):
+	# 	logger = frappe.logger("quickfix", allow_site=True, file_count=50)
+	# 	frappe.cache.delete_value("quickfix_status_chart")
+	# 	logger.info(f"Job Card {self.name} updated")
+
+	# 	frappe.utils.logger.set_log_level("INFO")
+
+	# 	logger.info("Dummyyyyyyyyyyyyyyy")
+	# 	logger.warning("webhook warning")
+	# 	logger.error("webhook error")
 
 
 @frappe.whitelist()
