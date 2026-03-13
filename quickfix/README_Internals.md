@@ -633,3 +633,18 @@ Explain: why should secrets NEVER be in common_site_config.json?
 
 Explain: what is the risk of committing site_config.json to git?
     If site_config.json is pushed to git, sensitive data like API keys and passwords may be exposed to others who access the repository. This can lead to security risks.
+
+Debug email failure: explain what to check in Email Queue, SMTP logs, and Error Log when an email fails to send
+
+    When an email fails to send in Frappe, check the following:
+
+    Email Queue:
+    Verify the email status (Sent, Not Sent, Error), recipients, retry count, and the error message or traceback in the Email Queue DocType.
+
+    SMTP Logs:
+    Inspect the worker logs in logs (worker.error.log and frappe.log) to identify SMTP authentication issues, connection failures, or server configuration problems.
+
+    Error Log:
+    Check the Error Log DocType to view the traceback and detailed error message to determine the root cause of the email failure.
+
+    
