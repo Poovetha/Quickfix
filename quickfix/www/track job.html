@@ -1,0 +1,12 @@
+<h2>Track Job</h2>
+
+<form method="get">
+    <input type="text" name="job_card" placeholder="Enter Job Card ID">
+    <button type="submit">Search</button>
+</form>
+
+{% if job %}
+<p>Job Card: {{ job.name }}</p>
+<p>Status: {{ job.status }}</p>
+<p>Customer: {{ job.customer_name }}</p>
+{% endif %}

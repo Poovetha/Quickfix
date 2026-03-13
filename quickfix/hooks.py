@@ -44,6 +44,7 @@ scheduler_events = {
 	"cron": {"0 2 1 * *": ["quickfix.api.monthly_revenue_report"]},
 }
 
+portal_menu_items = [{"title": "Track Job", "route": "/track job"}]
 
 # override_doctype_class = {"Job Card": "quickfix.override.custom_job_card.CustomJobCard"}
 
