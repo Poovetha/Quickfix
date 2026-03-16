@@ -38,6 +38,7 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 Demo Video:
 
 
+
 <video controls src="QuickFix.mp4" title="Title"></video>
 
 
