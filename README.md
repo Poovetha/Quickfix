@@ -37,7 +37,7 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 
 Demo Video:
 
-https://drive.google.com/file/d/1jaTaahZvTHfGEOnC_PRTydiD3qVyi09H/view?usp=drive_link
+https://drive.google.com/file/d/1kqwGpk1MtS1KNoZ48p7jKsMkTH6egVeE/view?usp=sharing
 
 
 <video controls src="QuickFix.mp4" title="Title"></video>
