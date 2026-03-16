@@ -29,11 +29,16 @@ frappe.ui.form.on("Job Card", {
 
 		if (frm.doc.status === "Ready for Delivery" && frm.doc.docstatus === 1) {
 			frm.add_custom_button("Mark as Delivered", function () {
-				frm.set_value("status", "Delivered");
-				frm.save();
-				frappe.show_alert({
-					message: "Status Changed to Delivered",
-					indicator: "blue",
+				frm.call({
+					method: "mark_as_delivered",
+					doc: frm.doc,
+					callback: function (r) {
+						frm.reload_doc();
+						frappe.show_alert({
+							message: "Status changed to Delivered",
+							indicator: "green",
+						});
+					},
 				});
 			});
 		}

@@ -194,7 +194,6 @@
    "label": "Remarks"
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -213,7 +212,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-14 18:05:04.739321",
+ "modified": "2026-03-16 16:34:14.894994",
  "modified_by": "Administrator",
  "module": "service_center",
  "name": "Job Card",
@@ -256,8 +255,10 @@
    "write": 1
   },
   {
+   "read": 1,
    "role": "QF Technician",
-   "select": 1
+   "submit": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

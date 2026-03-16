@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+import requests
 from frappe.model.document import Document
 from frappe.utils import now
 
@@ -91,19 +92,44 @@ class JobCard(Document):
 
 		frappe.enqueue(method="quickfix.api.send_job_ready_email", queue="short", name=self.name)
 
+	def send_webhook(self, job_card_name, retry=0):
+		settings = frappe.get_single("QuickFix Settings")
+		if not settings.webhook_url:
+			return
+		payload = {
+			"event": "job_submitted",
+			"job_card": self.name,
+			"customer": self.customer_name,
+			"amount": self.final_amount,
+		}
+		try:
+			requests.post(settings.webhook_url, json=payload, timeout=5)
+		except Exception as e:
+			frappe.log_error(f"Webhookfailed: {e}", "Webhook Error")
+		if retry < 3:
+			frappe.enqueue(
+				"quickfix.api.send_webhook",
+				job_card_name=job_card_name,
+				retry=retry + 1,
+				enqueue_after_commit=True,
+				timeout=60,
+			)
+
+		frappe.enqueue(self.send_webhook, job_card_name=self.name, retry_count=0, queue="default", timeout=60)
+
 	def on_cancel(self):
 		self.status = "Cancelled"
 		for parts in self.parts_used:
 			stock = frappe.get_value("Spare Part", {"part_name": parts.part_name}, ["stock_qty"]) or 0
 			final = stock + parts.quantity
-			frappe.db.set_value(
-				"Spare Part", {"part_name": parts.part_name}, "stock_qty", final, ignore_permissions=True
-			)
+			frappe.db.set_value("Spare Part", {"part_name": parts.part_name}, "stock_qty", final)
 
 		doc = frappe.db.get_value("Service Invoice", {"job_card": self.name, "docstatus": 1}, "name")
 		if doc:
 			invoice = frappe.get_doc("Service Invoice", doc)
 			invoice.cancel()
+
+		frappe.db.set_value("Job Card", self.name, "status", "Cancelled")
 
 	def on_trash(self):
 		if not self.status == "Cancelled" and not self.status == "Draft":
@@ -111,6 +137,10 @@ class JobCard(Document):
 
 	def before_print(self, print_settings=None):
 		self.print_summary = f"{self.customer_name} - {self.device_brand} {self.device_model}"
+
+	@frappe.whitelist()
+	def mark_as_delivered(self):
+		frappe.db.set_value("Job Card", self.name, "status", "Delivered")
 
 	# def on_update(self):
 	# 	logger = frappe.logger("quickfix", allow_site=True, file_count=50)

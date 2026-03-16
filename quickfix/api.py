@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import date
 
@@ -15,20 +16,20 @@ def send_job_ready_email(name):
 			recipients=[doc.customer_email],
 			subject=f"Your {doc.device_type} is Ready - {doc.name}",
 			message=f"""
-                Dear {doc.customer_name},<br><br>
+				Dear {doc.customer_name},<br><br>
 
-                We are pleased to inform you that your {doc.device_type} service has been successfully completed and is now ready for pickup.<br><br>
+				We are pleased to inform you that your {doc.device_type} service has been successfully completed and is now ready for pickup.<br><br>
 
-                Job Card Number: {doc.name}<br><br>
+				Job Card Number: {doc.name}<br><br>
 
-                Kindly visit our service centre at your convenience to collect your device.
-                If you have any questions, feel free to contact us.<br><br>
+				Kindly visit our service centre at your convenience to collect your device.
+				If you have any questions, feel free to contact us.<br><br>
 
-                Thank you for choosing us.<br><br>
+				Thank you for choosing us.<br><br>
 
-                Warm regards,
-                QuickFix Service Center<br><br>
-                """,
+				Warm regards,
+				QuickFix Service Center<br><br>
+				""",
 			attachments=[{"fname": f"{doc.name}.pdf", "fcontent": pdf}],
 		)
 	except Exception:
@@ -105,11 +106,11 @@ def monthly_revenue_report():
 
 def cancel_draft_job_cards():
 	frappe.db.sql("""
-        UPDATE `tabJob Card`
-        SET status = 'Cancelled'
-        WHERE status = 'Draft'
-        LIMIT 1000
-    """)
+		UPDATE `tabJob Card`
+		SET status = 'Cancelled'
+		WHERE status = 'Draft'
+		LIMIT 1000
+	""")
 	frappe.db.commit()
 
 
@@ -154,10 +155,10 @@ def get_status_chart_data():
 
 	data = frappe.db.sql(
 		"""
-        SELECT status, COUNT(name) as count
-        FROM `tabJob Card`
-        GROUP BY status
-    """,
+		SELECT status, COUNT(name) as count
+		FROM `tabJob Card`
+		GROUP BY status
+	""",
 		as_dict=True,
 	)
 
@@ -231,3 +232,41 @@ def track_job(phone):
 		frappe.throw("No jobs found for this phone")
 
 	return jobs
+
+
+@frappe.whitelist(allow_guest=True)
+def payment_webhook():
+	payload = frappe.request.get_data()
+	data = json.loads(payload)
+
+	ref = data.get("ref")
+	amount = data.get("final_amount")
+
+	if frappe.db.exists("Audit log", {"action": "payment_received", "document_name": ref}):
+		return {"status": "duplicate", "message": "Already processed"}
+
+	job = frappe.get_doc("Job Card", ref)
+
+	job.payment_status = "Paid"
+	job.paid_amount = amount
+	job.save(ignore_permissions=True)
+
+	invoice = frappe.db.get_value("Service Invoice", {"job_card": ref}, "name")
+
+	if invoice:
+		frappe.db.set_value("Service Invoice", invoice, {"payment_status": "Paid", "docstatus": 1})
+
+	frappe.get_doc(
+		{
+			"doctype": "Audit log",
+			"doctype_name": "Job Card",
+			"document_name": ref,
+			"action": "payment_received",
+			"user": "Administrator",
+			"timestamp": now(),
+		}
+	).insert(ignore_permissions=True)
+
+	frappe.db.commit()
+
+	return {"status": "ok"}

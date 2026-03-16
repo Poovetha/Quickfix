@@ -2,15 +2,6 @@
  {
   "average_repair_hours": 0,
   "description": null,
-  "device_type": "Smartphone",
-  "docstatus": 0,
-  "doctype": "Device Type",
-  "modified": "2026-02-24 18:32:34.942625",
-  "name": "Smartphone"
- },
- {
-  "average_repair_hours": 0,
-  "description": null,
   "device_type": "Laptop",
   "docstatus": 0,
   "doctype": "Device Type",
