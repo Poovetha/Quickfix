@@ -12,10 +12,14 @@ class JobCard(Document):
 	def validate(self):
 		self.labour_charge = frappe.get_single_value("QuickFix Settings", "default_labour_charge")
 
-		if not len(self.customer_phone) == 10:
-			frappe.throw("Phone Number must be exactly 10 digits")
+		if not self.customer_phone:
+			return
+
 		if not self.customer_phone.isdigit():
 			frappe.throw("Phone number must contain only digits")
+
+		if len(self.customer_phone) != 10:
+			frappe.throw("Phone number must be 10 digits")
 
 		if self.status == "In Repair" and not self.assigned__technician:
 			frappe.throw("Assigned Technician is must when status is repair")

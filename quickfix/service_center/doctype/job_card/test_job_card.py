@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.tests import IntegrationTestCase
+from frappe.utils import random_string
 
 # On IntegrationTestCase, the doctype test records and all
 # link-field test record dependencies are recursively loaded
@@ -12,66 +13,90 @@ IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
 class IntegrationTestJobCard(IntegrationTestCase):
-	pass
+	def setUp(self):
+		create_device_type()
+		create_technician()
+		create_spare_part()
+
+	def test_happy_path_insert(self):
+		job = create_job_card()
+		exists = frappe.db.exists("Job Card", job.name)
+
+		self.assertTrue(exists)
+		self.assertEqual(job.docstatus, 0)
+
+	def test_phone_validation(self):
+		self.assertRaises(frappe.ValidationError, create_job_card, customer_phone="12345")
+		self.assertRaises(frappe.ValidationError, create_job_card, customer_phone="123456789012")
+
+		self.assertRaises(frappe.ValidationError, create_job_card, customer_phone="98765abcde")
+
+		job = create_job_card(customer_phone="9876543210")
+
+		self.assertTrue(job.name)
+
+	def test_spare_part_price_validation(self):
+		self.assertRaises(frappe.ValidationError, create_spare_part, unit_cost=100, selling_price=100)
+
+		self.assertRaises(frappe.ValidationError, create_spare_part, unit_cost=100, selling_price=90)
+
+		part = create_spare_part(unit_cost=100, selling_price=101)
+
+		self.assertTrue(part.name)
 
 
-def make_device_type():
-	if not frappe.db.exists("Device Type", "Mobile"):
-		doc = frappe.get_doc({"doctype": "Device Type", "device_type_name": "Mobile"})
-		doc.insert(ignore_permissions=True)
-		return doc
+def create_device_type():
+	if not frappe.db.exists("Device Type", "Laptop"):
+		device = frappe.get_doc({"doctype": "Device Type", "device_type": "Laptop"})
+		device.insert()
+		return device
+	else:
+		return frappe.get_doc("Device Type", "Laptop")
 
-	return frappe.get_doc("Device Type", "Mobile")
 
-
-def make_technician():
+def create_technician():
 	if not frappe.db.exists("Technician", "Test Technician"):
-		doc = frappe.get_doc(
-			{"doctype": "Technician", "technician_name": "Test Technician", "status": "Active"}
-		)
-		doc.insert(ignore_permissions=True)
-		return doc
-
-	return frappe.get_doc("Technician", "Test Technician")
-
-
-def make_spare_part(stock_qty=10):
-	if not frappe.db.exists("Spare Part", "PART-001"):
-		doc = frappe.get_doc(
+		technician = frappe.get_doc(
 			{
-				"doctype": "Spare Part",
-				"part_code": "PART-001",
-				"part_name": "Test Part",
-				"stock_qty": stock_qty,
+				"doctype": "Technician",
+				"technician_name": "Test Technician",
 			}
 		)
-		doc.insert(ignore_permissions=True)
-		return doc
+		technician.insert()
+		return technician
+	else:
+		return frappe.get_doc("Technician", "Test Technician")
 
-	part = frappe.get_doc("Spare Part", "PART-001")
-	part.stock_qty = stock_qty
-	part.save(ignore_permissions=True)
+
+def create_spare_part(stock_qty=10, unit_cost=100, selling_price=150):
+	part = frappe.get_doc(
+		{
+			"doctype": "Spare Part",
+			"part_code": "TEST-" + random_string(5),
+			"part_name": "Test Part",
+			"stock_qty": stock_qty,
+			"unit_cost": unit_cost,
+			"selling_price": selling_price,
+		}
+	)
+
+	part.insert()
 	return part
 
 
-def make_job_card(**kwargs):
-	device = make_device_type()
-	technician = make_technician()
-
+def create_job_card(**kwargs):
 	data = {
 		"doctype": "Job Card",
 		"customer_name": "Test Customer",
-		"customer_email": "test@example.com",
-		"device_type": device.name,
-		"device_model": "Samsung",
-		"technician": technician.name,
-		"complaint": "Battery issue",
-		"status": "Open",
+		"customer_phone": "9876543210",
+		"customer_email": "poovethapalanivelu@gmail.com",
+		"device_type": "Laptop",
+		"problem_description": "Screen problem",
 	}
 
 	data.update(kwargs)
 
-	doc = frappe.get_doc(data)
-	doc.insert(ignore_permissions=True)
+	job = frappe.get_doc(data)
+	job.insert()
 
-	return doc
+	return job
