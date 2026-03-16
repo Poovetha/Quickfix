@@ -1,0 +1,13 @@
+[
+ {
+  "default_labour_charge": 500.0,
+  "docstatus": 0,
+  "doctype": "QuickFix Settings",
+  "low_stock_alert_enabled": 1,
+  "manager_email": "poovethapalanivelu1@gmail.com",
+  "modified": "2026-03-14 12:38:48.667666",
+  "name": "QuickFix Settings",
+  "shop_name": null,
+  "webhook_url": null
+ }
+]
