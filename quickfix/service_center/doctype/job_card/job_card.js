@@ -101,9 +101,9 @@ frappe.ui.form.on("Job Card", {
 			);
 		});
 
-		if (!frappe.user.has_role("Manager")) {
-			frm.set_df_property("customer_phone", "hidden", 1);
-		}
+		// if (!frappe.user.has_role("Manager")) {
+		// 	frm.set_df_property("customer_phone", "hidden", 1);
+		// }
 	},
 	status(frm) {
 		if (frm.doc.status == "Delivered") {

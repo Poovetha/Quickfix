@@ -6,10 +6,6 @@
    "label": "Today's Revenue"
   },
   {
-   "chart_name": "Open Job Cards",
-   "label": "Open Job Cards"
-  },
-  {
    "chart_name": "Job Status",
    "label": "Job Status"
   }
@@ -26,7 +22,7 @@
  "label": "Assessment",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-03-09 17:00:57.435502",
+ "modified": "2026-03-16 07:25:57.540353",
  "modified_by": "Administrator",
  "module": "service_center",
  "name": "Assessment",

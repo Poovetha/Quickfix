@@ -16,8 +16,7 @@ fixtures = [
 	"QuickFix Settings",
 ]
 
-after_install = {"quickfix.hook.after_install", "quickfix.hook.fixtures"}
-
+after_install = ["quickfix.hook.fixtures", "quickfix.hook.after_install"]
 before_uninstall = "quickfix.hook.before_uninstall"
 
 extend_bootinfo = "quickfix.hook.extend_bootinfo"

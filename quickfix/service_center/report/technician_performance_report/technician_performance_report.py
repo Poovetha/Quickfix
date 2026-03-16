@@ -140,7 +140,7 @@ def get_data(filters=None):
 	return data
 
 
-def prepare_report(filters=None):
+def monthly_prepare_report(filters=None):
 	frappe.enqueue(
 		method="frappe.desk.query_report.run",
 		queue="long",

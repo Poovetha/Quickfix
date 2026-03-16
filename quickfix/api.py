@@ -8,12 +8,27 @@ from frappe.utils import now, today
 
 def send_job_ready_email(name):
 	doc = frappe.get_doc("Job Card", name)
-	pdf = frappe.get_print("Job Card", doc.name, print_format="Job Card", as_pdf=True)
+
+	pdf = frappe.get_print("Job Card", doc.name, print_format="Job Card Receipt", as_pdf=True)
 	try:
 		frappe.sendmail(
 			recipients=[doc.customer_email],
-			template="Job Card",
-			args={"doc": doc},
+			subject=f"Your {doc.device_type} is Ready - {doc.name}",
+			message=f"""
+                Dear {doc.customer_name},<br><br>
+
+                We are pleased to inform you that your {doc.device_type} service has been successfully completed and is now ready for pickup.<br><br>
+
+                Job Card Number: {doc.name}<br><br>
+
+                Kindly visit our service centre at your convenience to collect your device.
+                If you have any questions, feel free to contact us.<br><br>
+
+                Thank you for choosing us.<br><br>
+
+                Warm regards,
+                QuickFix Service Center<br><br>
+                """,
 			attachments=[{"fname": f"{doc.name}.pdf", "fcontent": pdf}],
 		)
 	except Exception:
@@ -139,10 +154,10 @@ def get_status_chart_data():
 
 	data = frappe.db.sql(
 		"""
-		SELECT status, COUNT(name) as count
-		FROM `tabJob Card`
-		GROUP BY status
-	""",
+        SELECT status, COUNT(name) as count
+        FROM `tabJob Card`
+        GROUP BY status
+    """,
 		as_dict=True,
 	)
 
